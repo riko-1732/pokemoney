@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'screens/input.dart';
+import 'screens/income.dart';
+import 'screens/payment.dart';
 import 'screens/calendar.dart';
 import 'screens/graph.dart';
 
@@ -26,9 +27,10 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   static const _screens = [
-    InputPage(title: 'お小遣い帳'),
-    CalenderPage(title: 'お小遣い帳'),
-    GraphPage(title: 'お小遣い帳'),
+    IncomePage(title: '収入'),
+    PaymentPage(title: '支出'),
+    CalenderPage(title: 'カレンダー'),
+    GraphPage(title: 'グラフ'),
   ];
 
   int _selectedIndex = 0;
@@ -47,7 +49,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.create), label: '入力'),
+          BottomNavigationBarItem(icon: Icon(Icons.create), label: '収入'),
+          BottomNavigationBarItem(icon: Icon(Icons.trending_down), label: '支出'),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month),
             label: 'カレンダー',

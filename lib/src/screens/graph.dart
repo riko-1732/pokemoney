@@ -23,7 +23,7 @@ class _GraphPageState extends State<GraphPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('グラフ'),
+        title: Text('pokemoney'),
       ),
       body: Center(
         child: Column(

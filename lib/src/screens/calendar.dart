@@ -26,7 +26,7 @@ class _CalenderPageState extends State<CalenderPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text('pokemoney'),
       ),
       body: TableCalendar(
         firstDay: DateTime.utc(2010, 1, 1),
