@@ -12,6 +12,8 @@ class IncomePage extends StatefulWidget {
 
 class _IncomePageState extends State<IncomePage> {
   DateTime selectedDate = DateTime.now();
+  int selectValue = 0;
+  String result = "";
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,42 @@ class _IncomePageState extends State<IncomePage> {
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
+            Wrap(
+              spacing: 10,
+              children: [
+                ChoiceChip(
+                  label: Text("おこづかい"),
+                  selected: selectValue == 1,
+                  onSelected: (bool isSelected) {
+                    setState(() {
+                      selectValue = isSelected ? 1 : 0;
+                      result = selectValue.toString();
+                    });
+                  },
+                ),
+                ChoiceChip(
+                  label: Text("バイト代"),
+                  selected: selectValue == 2,
+                  onSelected: (bool isSelected) {
+                    setState(() {
+                      selectValue = isSelected ? 2 : 0;
+                      result = selectValue.toString();
+                    });
+                  },
+                ),
+                ChoiceChip(
+                  label: Text("その他"),
+                  selected: selectValue == 3,
+                  onSelected: (bool isSelected) {
+                    setState(() {
+                      selectValue = isSelected ? 3 : 0;
+                      result = selectValue.toString();
+                    });
+                  },
+                ),
+              ],
+            ),
+
             Text(
               '日付: ${selectedDate.year}/${selectedDate.month}/${selectedDate.day}',
             ),
