@@ -11,6 +11,8 @@ class IncomePage extends StatefulWidget {
 }
 
 class _IncomePageState extends State<IncomePage> {
+  DateTime selectedDate = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,9 +29,31 @@ class _IncomePageState extends State<IncomePage> {
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
+            Text(
+              '日付: ${selectedDate.year}/${selectedDate.month}/${selectedDate.day}',
+            ),
+            ElevatedButton(
+              onPressed: () => _selectDate(context),
+              child: const Text('日付選択'),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+
+    if (picked != null) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
   }
 }

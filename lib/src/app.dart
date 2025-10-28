@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(primarySwatch: Colors.grey),
       home: const MyStatefulWidget(),
     );
   }
@@ -49,7 +49,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.create), label: '収入'),
+          BottomNavigationBarItem(icon: Icon(Icons.create), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.trending_down), label: '支出'),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month),
