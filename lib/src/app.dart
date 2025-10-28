@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'screens/income.dart';
 import 'screens/payment.dart';
@@ -12,7 +13,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.grey),
+      theme: ThemeData(
+        primarySwatch: Colors.grey,
+        textTheme: GoogleFonts.ibmPlexSansJpTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
+
       home: const MyStatefulWidget(),
     );
   }

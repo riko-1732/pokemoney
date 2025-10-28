@@ -11,9 +11,52 @@ class IncomePage extends StatefulWidget {
 }
 
 class _IncomePageState extends State<IncomePage> {
+  final TextEditingController _moneyController = TextEditingController();
+
   DateTime selectedDate = DateTime.now();
   int selectValue = 0;
   String result = "";
+  String _getCategoryText(int value) {
+    switch (value) {
+      case 1:
+        return "おこづかい";
+      case 2:
+        return "バイト代";
+      case 3:
+        return "その他";
+      default:
+        return "未選択";
+    }
+  }
+
+  void _confirmIncome() {
+    // 入力値を取得
+    final String moneyText = _moneyController.text;
+    final String categoryText = _getCategoryText(selectValue);
+    final String dateText =
+        '${selectedDate.year}/${selectedDate.month}/${selectedDate.day}';
+
+    setState(() {
+      if (moneyText.isNotEmpty && selectValue != 0) {
+        result = '収入を記録しました: ${dateText}に${categoryText}で${moneyText}円';
+      } else if (moneyText.isEmpty) {
+        result = '金額を入力してください';
+      } else {
+        result = 'カテゴリを選択してください';
+      }
+
+      // 入力値のリセット
+      _moneyController.clear(); // 金額をリセット
+      selectValue = 0; // カテゴリをリセット
+      selectedDate = DateTime.now();
+    });
+  }
+
+  @override
+  void dispose() {
+    _moneyController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +71,7 @@ class _IncomePageState extends State<IncomePage> {
           children: <Widget>[
             const Text('収入を入力'),
             TextField(
+              controller: _moneyController,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
@@ -73,6 +117,19 @@ class _IncomePageState extends State<IncomePage> {
             ElevatedButton(
               onPressed: () => _selectDate(context),
               child: const Text('日付選択'),
+            ),
+            ElevatedButton(onPressed: _confirmIncome, child: Text('確定')),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                result.isEmpty ? '入力待ち...' : result,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: result.startsWith('⚠️') ? Colors.red : Colors.blue,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),
