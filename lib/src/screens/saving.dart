@@ -17,12 +17,7 @@ class _SavingPageState extends State<SavingPage> {
   int totalIncome = 0;
   int totalPayment = 0;
 
-  Map<String, int> categoryAllocations = {
-    "食費": 0,
-    "お菓子": 0,
-    "ライブ代": 0,
-    "交通費": 0,
-  };
+  Map<String, int> categoryAllocations = {};
 
   // TextEditingControllerをカテゴリごとに保持
   final Map<String, TextEditingController> _controllers = {};
