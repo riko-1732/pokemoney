@@ -49,8 +49,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     IncomePage(title: '収入'),
     PaymentPage(title: '支出'),
     SavingPage(title: '貯金'),
+    GraphPage(title: 'データ'),
     CalenderPage(title: 'カレンダー'),
-    GraphPage(title: 'グラフ'),
   ];
 
   int _selectedIndex = 0;
@@ -72,11 +72,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           BottomNavigationBarItem(icon: Icon(Icons.create), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.trending_down), label: '支出'),
           BottomNavigationBarItem(icon: Icon(Icons.savings), label: '貯金'),
+          BottomNavigationBarItem(icon: Icon(Icons.money), label: 'データ'),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month),
             label: 'カレンダー',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.money), label: 'データ'),
         ],
         type: BottomNavigationBarType.fixed,
       ),

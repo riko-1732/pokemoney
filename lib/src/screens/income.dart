@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
@@ -53,7 +54,7 @@ class _IncomePageState extends State<IncomePage> {
         final id = await dbHelper.insertIncome(row);
 
         setState(() {
-          result = '結果を記録しました';
+          result = '結果を記録しました  ${categoryText}：${amount}円';
         });
       } catch (e) {
         setState(() {

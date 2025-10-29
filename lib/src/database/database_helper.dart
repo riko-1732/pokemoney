@@ -45,6 +45,13 @@ class DatabaseHelper {
         amount INTEGER
       )
     ''');
+    await db.execute('''
+    CREATE TABLE category_allocation(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT UNIQUE,
+      amount INTEGER
+    )
+  ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -102,5 +109,24 @@ class DatabaseHelper {
 
     final total = result.first['total'] as int?;
     return total ?? 0;
+  }
+
+  Future<void> upsertCategoryAllocation(String name, int amount) async {
+    final db = await database;
+    await db.insert(
+      'category_allocation',
+      {'name': name, 'amount': amount},
+      conflictAlgorithm: ConflictAlgorithm.replace, // 同じ名前なら上書き
+    );
+  }
+
+  Future<Map<String, int>> getAllCategoryAllocations() async {
+    final db = await database;
+    final List<Map<String, dynamic>> result = await db.query(
+      'category_allocation',
+    );
+    return {
+      for (var row in result) row['name'] as String: row['amount'] as int,
+    };
   }
 }

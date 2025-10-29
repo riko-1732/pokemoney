@@ -54,7 +54,7 @@ class _PaymentPageState extends State<PaymentPage> {
         final id = await dbHelper.insertPayment(row);
 
         setState(() {
-          result = '結果を記録しました';
+          result = '結果を記録しました  ${categoryText}：${amount}円';
         });
       } catch (e) {
         setState(() {

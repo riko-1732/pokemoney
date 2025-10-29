@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../database/database_helper.dart';
+
 class GraphPage extends StatefulWidget {
   const GraphPage({super.key, required this.title});
 
@@ -10,11 +12,24 @@ class GraphPage extends StatefulWidget {
 }
 
 class _GraphPageState extends State<GraphPage> {
-  int _counter = 0;
+  final dbHelper = DatabaseHelper();
 
-  void _incrementCounter() {
+  int totalIncome = 0;
+  int totalPayment = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAllTotals();
+  }
+
+  Future<void> _loadAllTotals() async {
+    final income = await dbHelper.queryTotalIncome();
+    final payment = await dbHelper.queryTotalPayment();
+    if (!mounted) return;
     setState(() {
-      _counter++;
+      totalIncome = income;
+      totalPayment = payment;
     });
   }
 
@@ -29,18 +44,20 @@ class _GraphPageState extends State<GraphPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('graphpage'),
+            const Text('収入'),
+            const SizedBox(height: 10),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              '${totalIncome.toString()}円',
+              style: const TextStyle(fontSize: 24),
+            ),
+            const SizedBox(height: 30),
+            const Text('支出'),
+            Text(
+              '${totalPayment.toString()}円',
+              style: const TextStyle(fontSize: 24),
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
