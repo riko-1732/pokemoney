@@ -93,6 +93,13 @@ class _IncomePageState extends State<IncomePage> {
           children: <Widget>[
             const Text('収入を入力'),
             TextField(
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.edit),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(32),
+                ),
+              ),
+
               controller: _moneyController,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],

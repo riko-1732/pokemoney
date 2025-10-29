@@ -94,7 +94,7 @@ class DatabaseHelper {
     return total ?? 0;
   }
 
-  Future<int> queryTotalExpense() async {
+  Future<int> queryTotalPayment() async {
     final db = await database;
     final List<Map<String, dynamic>> result = await db.rawQuery(
       'SELECT SUM(amount) AS total FROM payment',
