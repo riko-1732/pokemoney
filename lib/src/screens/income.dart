@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import '../database/database_helper.dart';
 
 class IncomePage extends StatefulWidget {
   const IncomePage({super.key, required this.title});
@@ -11,6 +14,8 @@ class IncomePage extends StatefulWidget {
 }
 
 class _IncomePageState extends State<IncomePage> {
+  final dbHelper = DatabaseHelper();
+
   final TextEditingController _moneyController = TextEditingController();
 
   DateTime selectedDate = DateTime.now();
@@ -29,27 +34,44 @@ class _IncomePageState extends State<IncomePage> {
     }
   }
 
-  void _confirmIncome() {
+  void _confirmIncome() async {
     // 入力値を取得
     final String moneyText = _moneyController.text;
     final String categoryText = _getCategoryText(selectValue);
-    final String dateText =
+    final String dateString =
         '${selectedDate.year}/${selectedDate.month}/${selectedDate.day}';
 
-    setState(() {
-      if (moneyText.isNotEmpty && selectValue != 0) {
-        result = '収入を記録しました: ${dateText}に${categoryText}で${moneyText}円';
-      } else if (moneyText.isEmpty) {
-        result = '金額を入力してください';
-      } else {
-        result = 'カテゴリを選択してください';
-      }
+    final int? amount = int.tryParse(moneyText);
 
-      // 入力値のリセット
-      _moneyController.clear(); // 金額をリセット
-      selectValue = 0; // カテゴリをリセット
-      selectedDate = DateTime.now();
-    });
+    if (amount != null && selectValue != 0) {
+      try {
+        final row = <String, dynamic>{
+          'date': dateString,
+          'category': selectValue,
+          'amount': amount,
+        };
+        final id = await dbHelper.insertIncome(row);
+
+        setState(() {
+          result = '結果を記録しました';
+        });
+      } catch (e) {
+        setState(() {
+          result = 'データベース保存エラー';
+        });
+      }
+    } else if (moneyText.isEmpty || amount == null) {
+      setState(() {
+        result = '金額を正しく入力してください';
+      });
+    } else {
+      setState(() {
+        result = 'カテゴリを選択してください';
+      });
+    }
+    _moneyController.clear(); // 金額をリセット
+    selectValue = 0; // カテゴリをリセット
+    selectedDate = DateTime.now();
   }
 
   @override
@@ -84,7 +106,6 @@ class _IncomePageState extends State<IncomePage> {
                   onSelected: (bool isSelected) {
                     setState(() {
                       selectValue = isSelected ? 1 : 0;
-                      result = selectValue.toString();
                     });
                   },
                 ),
@@ -94,7 +115,6 @@ class _IncomePageState extends State<IncomePage> {
                   onSelected: (bool isSelected) {
                     setState(() {
                       selectValue = isSelected ? 2 : 0;
-                      result = selectValue.toString();
                     });
                   },
                 ),
@@ -104,7 +124,6 @@ class _IncomePageState extends State<IncomePage> {
                   onSelected: (bool isSelected) {
                     setState(() {
                       selectValue = isSelected ? 3 : 0;
-                      result = selectValue.toString();
                     });
                   },
                 ),
@@ -126,7 +145,9 @@ class _IncomePageState extends State<IncomePage> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: result.startsWith('⚠️') ? Colors.red : Colors.blue,
+                  color: result.startsWith('⚠️')
+                      ? Colors.red
+                      : const Color.fromARGB(255, 103, 103, 103),
                 ),
                 textAlign: TextAlign.center,
               ),
