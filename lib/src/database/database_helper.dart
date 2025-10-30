@@ -129,4 +129,29 @@ class DatabaseHelper {
       for (var row in result) row['name'] as String: row['amount'] as int,
     };
   }
+
+  Future<int> queryTotalIncomeByCategory(int categoryId) async {
+    final db = await database;
+
+    // SQLのWHERE句を使用して、特定のカテゴリIDに一致する行のみを合計
+    final List<Map<String, dynamic>> result = await db.rawQuery(
+      'SELECT SUM(amount) AS total FROM income WHERE category = ?',
+      [categoryId], // プレースホルダ(?)にカテゴリIDの値を渡す
+    );
+
+    final total = result.first['total'] as int?;
+    return total ?? 0;
+  }
+
+  Future<int> queryTotalPaymentByCategory(int categoryId) async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> result = await db.rawQuery(
+      'SELECT SUM(amount) AS total FROM payment WHERE category = ?',
+      [categoryId], // プレースホルダ(?)にカテゴリIDの値を渡す
+    );
+
+    final total = result.first['total'] as int?;
+    return total ?? 0;
+  }
 }
