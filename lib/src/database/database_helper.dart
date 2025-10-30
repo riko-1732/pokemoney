@@ -154,4 +154,22 @@ class DatabaseHelper {
     final total = result.first['total'] as int?;
     return total ?? 0;
   }
+
+  Future<int> querySavingAllocation() async {
+    final db = await database;
+
+    final List<Map<String, dynamic>> result = await db.query(
+      'category_allocation',
+      columns: ['amount'], // amount列のみを取得
+      where: 'name = ?', // nameが指定した値と一致する行
+      whereArgs: ['貯金'], // プレースホルダ(?)に渡す値
+    );
+
+    // 結果がある場合はそのamountを返し、ない場合は0を返す
+    if (result.isNotEmpty) {
+      return result.first['amount'] as int;
+    } else {
+      return 0;
+    }
+  }
 }

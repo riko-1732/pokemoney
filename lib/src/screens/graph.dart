@@ -3,6 +3,15 @@ import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
 import 'saving.dart';
 
+// カテゴリIDとカテゴリ名の対応表 (category_allocationのnameと一致している必要あり)
+const Map<int, String> paymentCategoryNames = {
+  1: '食費',
+  2: 'お菓子',
+  3: 'ライブ代',
+  4: '交通費',
+  5: '貯金',
+};
+
 class GraphPage extends StatefulWidget {
   const GraphPage({super.key, required this.title});
 
@@ -18,8 +27,14 @@ class _GraphPageState extends State<GraphPage> {
   int totalIncome = 0;
   int totalPayment = 0;
 
+  // savingAllocationは不要なので削除
+  // int savingAllocation = 0;
+
   Map<int, int> categoryIncomeTotals = {};
   Map<int, int> categoryPaymentTotals = {};
+
+  // カテゴリごとの割り当て額を保持
+  Map<String, int> categoryAllocations = {};
 
   @override
   void initState() {
@@ -41,6 +56,9 @@ class _GraphPageState extends State<GraphPage> {
     final fourthPaymentTotal = await dbHelper.queryTotalPaymentByCategory(4);
     final fifthPaymentTotal = await dbHelper.queryTotalPaymentByCategory(5);
 
+    // 全てのカテゴリの割り当てを取得
+    final allocations = await dbHelper.getAllCategoryAllocations();
+
     setState(() {
       totalIncome = income;
       categoryIncomeTotals = {
@@ -56,7 +74,83 @@ class _GraphPageState extends State<GraphPage> {
         4: fourthPaymentTotal,
         5: fifthPaymentTotal,
       };
+      // 割り当て額のMapを状態変数に格納
+      categoryAllocations = allocations;
     });
+  }
+
+  // 収入カテゴリの表示用（シンプルな表示）
+  Widget _buildIncomeCategoryTotal(String label, int amount) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Text(
+        '$label: ${amount.toString()} 円',
+        style: const TextStyle(fontSize: 16),
+      ),
+    );
+  }
+
+  // 支出カテゴリの割り当てと残額を表示するウィジェット
+  Widget _buildCategoryDetail(int categoryId, String label, int currentAmount) {
+    // カテゴリ名から割り当て額を取得。割り当てがない場合は0とする
+    final allocationAmount = categoryAllocations[label] ?? 0;
+
+    // 割り当て額が存在する場合のみ残額を表示
+    if (allocationAmount > 0) {
+      final remainingAmount = allocationAmount - currentAmount;
+
+      // 残額表示のテキストを決定
+      final String remainingText;
+      final Color textColor;
+
+      if (remainingAmount >= 0) {
+        remainingText = '残り ${remainingAmount.toString()} 円';
+        textColor = Colors.green;
+      } else {
+        remainingText = '超過 ${remainingAmount.abs().toString()} 円';
+        textColor = Colors.deepOrange; // 超過は赤系で目立たせる
+      }
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // カテゴリ名
+            SizedBox(
+              width: 80,
+              child: Text(
+                '$label:',
+                textAlign: TextAlign.right,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+            const SizedBox(width: 10),
+            // 現在使った額
+            Text(
+              '${currentAmount.toString()} 円 /',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color.fromARGB(255, 0, 0, 0),
+              ),
+            ),
+            const SizedBox(width: 5),
+            // 残りの額または超過額
+            Text(
+              remainingText,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // 割り当てがない場合は、従来のシンプルな表示
+      return _buildIncomeCategoryTotal(label, currentAmount);
+    }
   }
 
   @override
@@ -64,46 +158,81 @@ class _GraphPageState extends State<GraphPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('pokemoney'),
+        title: const Text('pokemoney'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('収入'),
-            const SizedBox(height: 10),
-            Text(
-              '${totalIncome.toString()}円',
-              style: const TextStyle(fontSize: 24),
-            ),
-            _buildCategoryTotal('おこづかい', categoryIncomeTotals[1] ?? 0),
-            _buildCategoryTotal('バイト代', categoryIncomeTotals[2] ?? 0),
-            _buildCategoryTotal('その他', categoryIncomeTotals[3] ?? 0),
-            const SizedBox(height: 30),
-            const Text('支出'),
-            Text(
-              '${totalPayment.toString()}円',
-              style: const TextStyle(fontSize: 24),
-            ),
-            _buildCategoryTotal('食費', categoryPaymentTotals[1] ?? 0),
-            _buildCategoryTotal('お菓子', categoryPaymentTotals[2] ?? 0),
-            _buildCategoryTotal('ライブ代', categoryPaymentTotals[3] ?? 0),
-            _buildCategoryTotal('交通費', categoryPaymentTotals[4] ?? 0),
-            _buildCategoryTotal('貯金', categoryPaymentTotals[5] ?? 0),
-            const SizedBox(height: 50),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // 収入表示
+              const Text(
+                '収入',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '${totalIncome.toString()}円',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              _buildIncomeCategoryTotal('おこづかい', categoryIncomeTotals[1] ?? 0),
+              _buildIncomeCategoryTotal('バイト代', categoryIncomeTotals[2] ?? 0),
+              _buildIncomeCategoryTotal('その他', categoryIncomeTotals[3] ?? 0),
+
+              const SizedBox(height: 30),
+              const Divider(),
+              const SizedBox(height: 10),
+
+              // 支出表示
+              const Text(
+                '支出',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '${totalPayment.toString()}円',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              // _buildCategoryDetailを使用して、すべての支出カテゴリを表示
+              _buildCategoryDetail(
+                1,
+                paymentCategoryNames[1]!,
+                categoryPaymentTotals[1] ?? 0,
+              ),
+              _buildCategoryDetail(
+                2,
+                paymentCategoryNames[2]!,
+                categoryPaymentTotals[2] ?? 0,
+              ),
+              _buildCategoryDetail(
+                3,
+                paymentCategoryNames[3]!,
+                categoryPaymentTotals[3] ?? 0,
+              ),
+              _buildCategoryDetail(
+                4,
+                paymentCategoryNames[4]!,
+                categoryPaymentTotals[4] ?? 0,
+              ),
+              _buildCategoryDetail(
+                5,
+                paymentCategoryNames[5]!,
+                categoryPaymentTotals[5] ?? 0,
+              ),
+
+              // 以前の_buildAllocationDifferenceは不要になったので削除
+              const SizedBox(height: 50),
+            ],
+          ),
         ),
       ),
     );
   }
-}
-
-Widget _buildCategoryTotal(String label, int amount) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4.0),
-    child: Text(
-      '$label: ${amount.toString()} 円',
-      style: const TextStyle(fontSize: 16),
-    ),
-  );
 }

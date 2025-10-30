@@ -22,6 +22,7 @@ class _SavingPageState extends State<SavingPage> {
     "お菓子": 0,
     "ライブ代": 0,
     "交通費": 0,
+    "その他": 0,
   };
 
   // TextEditingControllerをカテゴリごとに保持
