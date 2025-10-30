@@ -9,7 +9,8 @@ const Map<int, String> paymentCategoryNames = {
   2: 'お菓子',
   3: 'ライブ代',
   4: '交通費',
-  5: '貯金',
+  5: 'その他',
+  6: '貯金',
 };
 
 class GraphPage extends StatefulWidget {
@@ -153,6 +154,11 @@ class _GraphPageState extends State<GraphPage> {
     }
   }
 
+  int get diffirenceMoney {
+    final diffirence = totalIncome - totalPayment;
+    return diffirence;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -178,20 +184,21 @@ class _GraphPageState extends State<GraphPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              SizedBox(height: 20),
               _buildIncomeCategoryTotal('おこづかい', categoryIncomeTotals[1] ?? 0),
               _buildIncomeCategoryTotal('バイト代', categoryIncomeTotals[2] ?? 0),
               _buildIncomeCategoryTotal('その他', categoryIncomeTotals[3] ?? 0),
 
               const SizedBox(height: 30),
               const Divider(),
-              const SizedBox(height: 10),
+              const SizedBox(height: 30),
 
               // 支出表示
               const Text(
                 '支出',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               Text(
                 '${totalPayment.toString()}円',
                 style: const TextStyle(
@@ -199,6 +206,7 @@ class _GraphPageState extends State<GraphPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              SizedBox(height: 20),
 
               // _buildCategoryDetailを使用して、すべての支出カテゴリを表示
               _buildCategoryDetail(
@@ -226,6 +234,8 @@ class _GraphPageState extends State<GraphPage> {
                 paymentCategoryNames[5]!,
                 categoryPaymentTotals[5] ?? 0,
               ),
+              SizedBox(height: 20),
+              Text('あまり: ${diffirenceMoney}円', style: TextStyle(fontSize: 20)),
 
               // 以前の_buildAllocationDifferenceは不要になったので削除
               const SizedBox(height: 50),

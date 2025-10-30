@@ -23,6 +23,7 @@ class _SavingPageState extends State<SavingPage> {
     "ライブ代": 0,
     "交通費": 0,
     "その他": 0,
+    "貯金": 0,
   };
 
   // TextEditingControllerをカテゴリごとに保持
@@ -87,7 +88,7 @@ class _SavingPageState extends State<SavingPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text('pokemoney'),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -132,7 +133,7 @@ class _SavingPageState extends State<SavingPage> {
 
               const SizedBox(height: 20),
               Text(
-                '貯金額：${remainingIncome}円',
+                'あまり：${remainingIncome}円',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
