@@ -70,8 +70,8 @@ class _PaymentPageState extends State<PaymentPage> {
         result = 'カテゴリを選択してください';
       });
     }
-    _moneyController.clear(); // 金額をリセット
-    selectValue = 0; // カテゴリをリセット
+    _moneyController.clear();
+    selectValue = 0;
     selectedDate = DateTime.now();
   }
 

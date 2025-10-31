@@ -36,7 +36,6 @@ class _IncomePageState extends State<IncomePage> {
   }
 
   void _confirmIncome() async {
-    // 入力値を取得
     final String moneyText = _moneyController.text;
     final String categoryText = _getCategoryText(selectValue);
     final String dateString =
@@ -70,8 +69,8 @@ class _IncomePageState extends State<IncomePage> {
         result = 'カテゴリを選択してください';
       });
     }
-    _moneyController.clear(); // 金額をリセット
-    selectValue = 0; // カテゴリをリセット
+    _moneyController.clear();
+    selectValue = 0;
     selectedDate = DateTime.now();
   }
 

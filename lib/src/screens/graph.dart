@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
 import 'saving.dart';
 
-// カテゴリIDとカテゴリ名の対応表 (category_allocationのnameと一致している必要あり)
 const Map<int, String> paymentCategoryNames = {
   1: '食費',
   2: 'お菓子',
@@ -28,13 +27,9 @@ class _GraphPageState extends State<GraphPage> {
   int totalIncome = 0;
   int totalPayment = 0;
 
-  // savingAllocationは不要なので削除
-  // int savingAllocation = 0;
-
   Map<int, int> categoryIncomeTotals = {};
   Map<int, int> categoryPaymentTotals = {};
 
-  // カテゴリごとの割り当て額を保持
   Map<String, int> categoryAllocations = {};
 
   @override
@@ -57,7 +52,6 @@ class _GraphPageState extends State<GraphPage> {
     final fourthPaymentTotal = await dbHelper.queryTotalPaymentByCategory(4);
     final fifthPaymentTotal = await dbHelper.queryTotalPaymentByCategory(5);
 
-    // 全てのカテゴリの割り当てを取得
     final allocations = await dbHelper.getAllCategoryAllocations();
 
     setState(() {
@@ -75,12 +69,11 @@ class _GraphPageState extends State<GraphPage> {
         4: fourthPaymentTotal,
         5: fifthPaymentTotal,
       };
-      // 割り当て額のMapを状態変数に格納
+
       categoryAllocations = allocations;
     });
   }
 
-  // 収入カテゴリの表示用（シンプルな表示）
   Widget _buildIncomeCategoryTotal(String label, int amount) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -91,16 +84,12 @@ class _GraphPageState extends State<GraphPage> {
     );
   }
 
-  // 支出カテゴリの割り当てと残額を表示するウィジェット
   Widget _buildCategoryDetail(int categoryId, String label, int currentAmount) {
-    // カテゴリ名から割り当て額を取得。割り当てがない場合は0とする
     final allocationAmount = categoryAllocations[label] ?? 0;
 
-    // 割り当て額が存在する場合のみ残額を表示
     if (allocationAmount > 0) {
       final remainingAmount = allocationAmount - currentAmount;
 
-      // 残額表示のテキストを決定
       final String remainingText;
       final Color textColor;
 
@@ -109,7 +98,7 @@ class _GraphPageState extends State<GraphPage> {
         textColor = Colors.green;
       } else {
         remainingText = '超過 ${remainingAmount.abs().toString()} 円';
-        textColor = Colors.deepOrange; // 超過は赤系で目立たせる
+        textColor = Colors.deepOrange;
       }
 
       return Padding(
@@ -117,7 +106,6 @@ class _GraphPageState extends State<GraphPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // カテゴリ名
             SizedBox(
               width: 80,
               child: Text(
@@ -127,7 +115,7 @@ class _GraphPageState extends State<GraphPage> {
               ),
             ),
             const SizedBox(width: 10),
-            // 現在使った額
+
             Text(
               '${currentAmount.toString()} 円 /',
               style: const TextStyle(
@@ -136,7 +124,7 @@ class _GraphPageState extends State<GraphPage> {
               ),
             ),
             const SizedBox(width: 5),
-            // 残りの額または超過額
+
             Text(
               remainingText,
               style: TextStyle(
@@ -149,7 +137,6 @@ class _GraphPageState extends State<GraphPage> {
         ),
       );
     } else {
-      // 割り当てがない場合は、従来のシンプルな表示
       return _buildIncomeCategoryTotal(label, currentAmount);
     }
   }
@@ -171,7 +158,6 @@ class _GraphPageState extends State<GraphPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // 収入表示
               const Text(
                 '収入',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -193,7 +179,6 @@ class _GraphPageState extends State<GraphPage> {
               const Divider(),
               const SizedBox(height: 30),
 
-              // 支出表示
               const Text(
                 '支出',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -208,7 +193,6 @@ class _GraphPageState extends State<GraphPage> {
               ),
               SizedBox(height: 20),
 
-              // _buildCategoryDetailを使用して、すべての支出カテゴリを表示
               _buildCategoryDetail(
                 1,
                 paymentCategoryNames[1]!,
@@ -236,8 +220,6 @@ class _GraphPageState extends State<GraphPage> {
               ),
               SizedBox(height: 20),
               Text('あまり: ${diffirenceMoney}円', style: TextStyle(fontSize: 20)),
-
-              // 以前の_buildAllocationDifferenceは不要になったので削除
               const SizedBox(height: 50),
             ],
           ),

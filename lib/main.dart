@@ -6,6 +6,6 @@ import 'src/app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DatabaseHelper.deleteDatabaseFile(); // ← 一度DBを削除
+  await DatabaseHelper.deleteDatabaseFile();
   runApp(const MyApp());
 }

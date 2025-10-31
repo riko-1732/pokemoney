@@ -26,7 +26,6 @@ class _SavingPageState extends State<SavingPage> {
     "貯金": 0,
   };
 
-  // TextEditingControllerをカテゴリごとに保持
   final Map<String, TextEditingController> _controllers = {};
 
   @override
@@ -64,12 +63,10 @@ class _SavingPageState extends State<SavingPage> {
     });
   }
 
-  // データをDBに保存
   Future<void> _saveCategory(String name, int amount) async {
     await dbHelper.upsertCategoryAllocation(name, amount);
   }
 
-  // 残り金額を計算
   int get remainingIncome {
     int used = categoryAllocations.values.fold(0, (sum, val) => sum + val);
     return totalIncome - used;
@@ -126,11 +123,10 @@ class _SavingPageState extends State<SavingPage> {
                       setState(() {
                         categoryAllocations[entry.key] = newVal;
                       });
-                      await _saveCategory(entry.key, newVal); // 入力のたびに保存
+                      await _saveCategory(entry.key, newVal);
                     },
                   ),
                 ),
-
               const SizedBox(height: 20),
               Text(
                 'あまり：${remainingIncome}円',

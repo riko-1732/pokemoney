@@ -55,9 +55,7 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // 古いバージョンから新しいバージョンにアップデートする場合の処理
     if (oldVersion < 2) {
-      // バージョン2でpaymentテーブルを追加
       await db.execute('''
       CREATE TABLE payment(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,8 +64,6 @@ class DatabaseHelper {
         amount INTEGER
       )
     ''');
-      // 注意: IncomePageのテーブル名を変更した場合は、ここも修正が必要です。
-      // 例: 旧テーブル名がexpenseで、paymentに変更した場合など。
     }
   }
 
@@ -75,12 +71,11 @@ class DatabaseHelper {
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, 'income_database.db');
 
-    await deleteDatabase(path); // データベースファイルを削除
+    await deleteDatabase(path);
 
     _database = null;
   }
 
-  // データの挿入
   Future<int> insertIncome(Map<String, dynamic> row) async {
     final db = await database;
     return await db.insert('income', row);
@@ -113,11 +108,10 @@ class DatabaseHelper {
 
   Future<void> upsertCategoryAllocation(String name, int amount) async {
     final db = await database;
-    await db.insert(
-      'category_allocation',
-      {'name': name, 'amount': amount},
-      conflictAlgorithm: ConflictAlgorithm.replace, // 同じ名前なら上書き
-    );
+    await db.insert('category_allocation', {
+      'name': name,
+      'amount': amount,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<Map<String, int>> getAllCategoryAllocations() async {
@@ -133,10 +127,9 @@ class DatabaseHelper {
   Future<int> queryTotalIncomeByCategory(int categoryId) async {
     final db = await database;
 
-    // SQLのWHERE句を使用して、特定のカテゴリIDに一致する行のみを合計
     final List<Map<String, dynamic>> result = await db.rawQuery(
       'SELECT SUM(amount) AS total FROM income WHERE category = ?',
-      [categoryId], // プレースホルダ(?)にカテゴリIDの値を渡す
+      [categoryId],
     );
 
     final total = result.first['total'] as int?;
@@ -148,7 +141,7 @@ class DatabaseHelper {
 
     final List<Map<String, dynamic>> result = await db.rawQuery(
       'SELECT SUM(amount) AS total FROM payment WHERE category = ?',
-      [categoryId], // プレースホルダ(?)にカテゴリIDの値を渡す
+      [categoryId],
     );
 
     final total = result.first['total'] as int?;
@@ -160,12 +153,11 @@ class DatabaseHelper {
 
     final List<Map<String, dynamic>> result = await db.query(
       'category_allocation',
-      columns: ['amount'], // amount列のみを取得
-      where: 'name = ?', // nameが指定した値と一致する行
-      whereArgs: ['貯金'], // プレースホルダ(?)に渡す値
+      columns: ['amount'],
+      where: 'name = ?',
+      whereArgs: ['貯金'],
     );
 
-    // 結果がある場合はそのamountを返し、ない場合は0を返す
     if (result.isNotEmpty) {
       return result.first['amount'] as int;
     } else {
